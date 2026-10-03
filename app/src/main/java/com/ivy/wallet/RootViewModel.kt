@@ -64,6 +64,9 @@ class RootViewModel @Inject constructor(
                 val theme = settingsDao.findAll().firstOrNull()?.theme
                     ?: if (systemDarkMode) Theme.DARK else Theme.LIGHT
                 ivyContext.switchTheme(theme)
+                ivyContext.switchDynamicColors(
+                    sharedPrefs.getBoolean(SharedPrefs.DYNAMIC_COLORS, false)
+                )
 
                 ivyContext.initStartDayOfMonthInMemory(sharedPrefs = sharedPrefs)
             }

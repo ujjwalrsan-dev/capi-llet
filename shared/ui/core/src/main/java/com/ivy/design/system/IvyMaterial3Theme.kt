@@ -1,22 +1,51 @@
 package com.ivy.design.system
 
+import android.os.Build
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import com.ivy.design.system.colors.IvyColors
 
 @Composable
 fun IvyMaterial3Theme(
     isTrueBlack: Boolean,
     dark: Boolean = isSystemInDarkTheme(),
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
+    val colorScheme = if (dynamicColor && supportsDynamicColor()) {
+        val context = LocalContext.current
+        if (dark) {
+            dynamicDarkColorScheme(context).let { scheme ->
+                if (isTrueBlack) {
+                    scheme.copy(background = IvyColors.TrueBlack, surface = IvyColors.TrueBlack)
+                } else {
+                    scheme
+                }
+            }
+        } else {
+            dynamicLightColorScheme(context)
+        }
+    } else if (dark) {
+        ivyDarkColorScheme(isTrueBlack)
+    } else {
+        ivyLightColorScheme()
+    }
+
     MaterialTheme(
-        colorScheme = if (dark) ivyDarkColorScheme(isTrueBlack) else ivyLightColorScheme(),
+        colorScheme = colorScheme,
         content = content,
     )
 }
+
+/** Material You dynamic color is available on Android 12 (API 31) and above. */
+@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
+fun supportsDynamicColor(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
 private fun ivyLightColorScheme(): ColorScheme = ColorScheme(
     primary = IvyColors.Purple.primary,

@@ -52,6 +52,7 @@ import com.ivy.ui.time.TimeFormatter
 import com.ivy.ui.time.impl.DateTimePicker
 import com.ivy.wallet.ui.applocked.AppLockedScreen
 import com.ivy.widget.balance.WalletBalanceWidgetReceiver
+import com.ivy.widget.dailytransactions.DailyTransactionsWidgetReceiver
 import com.ivy.widget.transaction.AddTransactionWidget
 import com.ivy.widget.transaction.AddTransactionWidgetCompact
 import dagger.hilt.android.AndroidEntryPoint
@@ -148,7 +149,8 @@ class RootActivity : AppCompatActivity(), RootScreen {
                     ivyDesign = appDesign(ivyContext),
                     systemDarkTheme = isSystemInDarkTheme
                 ),
-                isTrueBlack = appDesign(ivyContext).context().theme == Theme.AMOLED_DARK
+                isTrueBlack = appDesign(ivyContext).context().theme == Theme.AMOLED_DARK,
+                dynamicColor = ivyContext.dynamicColors,
             ) {
                 dateTimePicker.Content()
             }
@@ -163,6 +165,7 @@ class RootActivity : AppCompatActivity(), RootScreen {
         AddTransactionWidget.updateBroadcast(this)
         AddTransactionWidgetCompact.updateBroadcast(this)
         WalletBalanceWidgetReceiver.updateBroadcast(this)
+        DailyTransactionsWidgetReceiver.updateBroadcast(this)
     }
 
     private companion object {
@@ -316,6 +319,7 @@ class RootActivity : AppCompatActivity(), RootScreen {
 
     override fun onPause() {
         super.onPause()
+        DailyTransactionsWidgetReceiver.updateBroadcast(this)
         if (viewModel.isAppLockEnabled()) {
             viewModel.startUserInactiveTimeCounter()
         }

@@ -8,6 +8,7 @@ data class SettingsState(
     val currentTheme: Theme,
     val lockApp: Boolean,
     val showNotifications: Boolean,
+    val dynamicColors: Boolean,
     val hideCurrentBalance: Boolean,
     val hideIncome: Boolean,
     val treatTransfersAsIncomeExpense: Boolean,

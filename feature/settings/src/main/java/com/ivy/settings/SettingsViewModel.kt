@@ -83,6 +83,7 @@ class SettingsViewModel @Inject constructor(
             currentTheme = getCurrentTheme(),
             lockApp = getLockApp(),
             showNotifications = getShowNotifications(),
+            dynamicColors = ivyContext.dynamicColors,
             hideCurrentBalance = getHideCurrentBalance(),
             treatTransfersAsIncomeExpense = getTreatTransfersAsIncomeExpense(),
             startDateOfMonth = getStartDateOfMonth(),
@@ -216,6 +217,7 @@ class SettingsViewModel @Inject constructor(
             SettingsEvent.SwitchTheme -> switchTheme()
             is SettingsEvent.SetLockApp -> setLockApp(event.lockApp)
             is SettingsEvent.SetShowNotifications -> setShowNotifications(event.showNotifications)
+            is SettingsEvent.SetDynamicColors -> setDynamicColors(event.enabled)
             is SettingsEvent.SetHideCurrentBalance -> setHideCurrentBalance(
                 event.hideCurrentBalance
             )
@@ -324,6 +326,14 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             sharedPrefs.putBoolean(SharedPrefs.APP_LOCK_ENABLED, lock)
             refreshWidget(WalletBalanceWidgetReceiver::class.java)
+        }
+    }
+
+    private fun setDynamicColors(enabled: Boolean) {
+        ivyContext.switchDynamicColors(enabled)
+
+        viewModelScope.launch {
+            sharedPrefs.putBoolean(SharedPrefs.DYNAMIC_COLORS, enabled)
         }
     }
 

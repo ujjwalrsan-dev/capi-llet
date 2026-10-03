@@ -4,9 +4,11 @@ import androidx.annotation.ColorInt
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -94,8 +96,23 @@ val GradientGreen = Gradient(Green, Color(0xFF49F2C8))
 @Deprecated("Old design system. Use `:ivy-design` and Material3")
 val GradientOrangeRevert = Gradient(Color(0xFFF2CD9E), Orange)
 
+private val GradientIvyDefault = Gradient(Ivy, Color(0xFFAA99FF))
+
+/** Follows the theme accent, so it picks up Material You colors when enabled. */
 @Deprecated("Old design system. Use `:ivy-design` and Material3")
-val GradientIvy = Gradient(Ivy, Color(0xFFAA99FF))
+val GradientIvy: Gradient
+    @Composable
+    @ReadOnlyComposable
+    get() {
+        val primary = UI.colors.primary
+        return if (primary == Ivy) {
+            GradientIvyDefault
+        } else {
+            Gradient(primary, lerp(primary, Color.White, GRADIENT_LIGHTEN_FRACTION))
+        }
+    }
+
+private const val GRADIENT_LIGHTEN_FRACTION = 0.45f
 
 @Deprecated("Old design system. Use `:ivy-design` and Material3")
 fun Modifier.gradientCutBackgroundTop(

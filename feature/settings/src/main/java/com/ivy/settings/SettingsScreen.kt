@@ -41,6 +41,7 @@ import com.ivy.base.legacy.Theme
 import com.ivy.design.l0_system.UI
 import com.ivy.design.l0_system.style
 import com.ivy.design.l1_buildingBlocks.IconScale
+import com.ivy.design.system.supportsDynamicColor
 import com.ivy.design.l1_buildingBlocks.IvyIconScaled
 import com.ivy.design.utils.thenIf
 import com.ivy.legacy.Constants
@@ -91,6 +92,7 @@ fun BoxWithConstraintsScope.SettingsScreen() {
         },
         lockApp = uiState.lockApp,
         showNotifications = uiState.showNotifications,
+        dynamicColors = uiState.dynamicColors,
         hideCurrentBalance = uiState.hideCurrentBalance,
         hideIncome = uiState.hideIncome,
         progressState = uiState.progressState,
@@ -115,6 +117,9 @@ fun BoxWithConstraintsScope.SettingsScreen() {
         },
         onSetShowNotifications = {
             viewModel.onEvent(SettingsEvent.SetShowNotifications(it))
+        },
+        onSetDynamicColors = {
+            viewModel.onEvent(SettingsEvent.SetDynamicColors(it))
         },
         onSetHideCurrentBalance = {
             viewModel.onEvent(SettingsEvent.SetHideCurrentBalance(it))
@@ -153,6 +158,7 @@ private fun BoxWithConstraintsScope.UI(
     onSetCurrency: (String) -> Unit,
     startDateOfMonth: Int = 1,
     showNotifications: Boolean = true,
+    dynamicColors: Boolean = false,
     hideCurrentBalance: Boolean = false,
     hideIncome: Boolean = false,
     progressState: Boolean = false,
@@ -162,6 +168,7 @@ private fun BoxWithConstraintsScope.UI(
     onExportToCSV: () -> Unit = {},
     onSetLockApp: (Boolean) -> Unit = {},
     onSetShowNotifications: (Boolean) -> Unit = {},
+    onSetDynamicColors: (Boolean) -> Unit = {},
     onSetTreatTransfersAsIncExp: (Boolean) -> Unit = {},
     onSetHideCurrentBalance: (Boolean) -> Unit = {},
     onSetHideIncome: (Boolean) -> Unit = {},
@@ -292,6 +299,18 @@ private fun BoxWithConstraintsScope.UI(
                 }
             ) {
                 onSwitchTheme()
+            }
+
+            if (supportsDynamicColor()) {
+                Spacer(Modifier.height(12.dp))
+
+                AppSwitch(
+                    lockApp = dynamicColors,
+                    onSetLockApp = onSetDynamicColors,
+                    text = stringResource(R.string.dynamic_colors),
+                    description = stringResource(R.string.dynamic_colors_description),
+                    icon = R.drawable.ic_custom_palette_m
+                )
             }
 
             Spacer(Modifier.height(12.dp))

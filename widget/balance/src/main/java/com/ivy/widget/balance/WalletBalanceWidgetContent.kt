@@ -5,11 +5,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.glance.ColorFilter
 import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.action.clickable
+import androidx.glance.appwidget.appWidgetBackground
+import androidx.glance.appwidget.cornerRadius
 import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
@@ -29,6 +33,11 @@ import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.ivy.ui.R
 
+// Income keeps Ivy's green because it carries meaning; everything else comes from
+// GlanceTheme (Material You wallpaper colors on Android 12+, light/dark aware).
+private val IncomeGreen = Color(0xFF14CC9E)
+private val OnIncomeGreen = Color.White
+
 @Composable
 fun WalletBalanceWidgetContent(
     appLocked: Boolean,
@@ -44,7 +53,10 @@ fun WalletBalanceWidgetContent(
     val resources = LocalContext.current.resources
     Box(
         GlanceModifier
-            .background(ImageProvider(R.drawable.shape_widget_background))
+            .fillMaxSize()
+            .appWidgetBackground()
+            .cornerRadius(24.dp)
+            .background(GlanceTheme.colors.widgetBackground)
             .clickable(onWidgetClick),
         contentAlignment = Alignment.Center
     ) {
@@ -59,7 +71,7 @@ fun WalletBalanceWidgetContent(
                     text = resources.getString(R.string.app_locked),
                     style = TextStyle(
                         fontSize = 25.sp,
-                        color = ColorProvider(Color.White),
+                        color = GlanceTheme.colors.onSurface,
                         textAlign = TextAlign.Center
                     )
                 )
@@ -74,20 +86,30 @@ fun WalletBalanceWidgetContent(
 
 @Composable
 fun RowScope.WidgetClickableItem(
-    @DrawableRes image: Int,
+    @DrawableRes icon: Int,
+    contentDescription: String,
+    background: ColorProvider,
+    iconTint: ColorProvider,
     onClick: () -> Unit,
 ) {
-    Column(
-        GlanceModifier
-            .defaultWeight()
-            .clickable(onClick),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        GlanceModifier.defaultWeight().clickable(onClick),
+        contentAlignment = Alignment.Center
     ) {
-        Image(
-            modifier = GlanceModifier.size(52.dp),
-            provider = ImageProvider(image),
-            contentDescription = null
-        )
+        Box(
+            GlanceModifier
+                .size(52.dp)
+                .cornerRadius(26.dp)
+                .background(background),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                modifier = GlanceModifier.size(32.dp),
+                provider = ImageProvider(icon),
+                contentDescription = contentDescription,
+                colorFilter = ColorFilter.tint(iconTint)
+            )
+        }
     }
 }
 
@@ -98,13 +120,13 @@ fun BalanceSection(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = GlanceModifier.padding(start = 12.dp, end = 12.dp, top = 12.dp),
+        modifier = GlanceModifier.padding(start = 16.dp, end = 16.dp, top = 12.dp),
     ) {
         Text(
             text = currency,
             style = TextStyle(
                 fontSize = 30.sp,
-                color = ColorProvider(Color.White)
+                color = GlanceTheme.colors.onSurfaceVariant
             )
         )
         Spacer(GlanceModifier.width(10.dp))
@@ -113,7 +135,7 @@ fun BalanceSection(
             style = TextStyle(
                 fontSize = 34.sp,
                 fontWeight = FontWeight.Bold,
-                color = ColorProvider(Color.White)
+                color = GlanceTheme.colors.onSurface
             )
         )
     }
@@ -125,50 +147,60 @@ fun IncomeExpenseSection(
     expense: String,
     currency: String,
 ) {
+    val resources = LocalContext.current.resources
     Row(
         GlanceModifier.fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val resources = LocalContext.current.resources
-        Row(
-            GlanceModifier
-                .padding(10.dp)
-                .defaultWeight()
-                .background(ImageProvider(R.drawable.income_shape_widget_background)),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Image(ImageProvider(R.drawable.ic_income_white), resources.getString((R.string.income)))
-            Text(
-                text = "$income $currency",
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = ColorProvider(Color.White)
-                )
-            )
-        }
+        AmountPill(
+            icon = R.drawable.ic_income_white,
+            contentDescription = resources.getString(R.string.income),
+            text = "$income $currency",
+            background = ColorProvider(IncomeGreen),
+            content = ColorProvider(OnIncomeGreen),
+        )
         Spacer(GlanceModifier.width(8.dp))
-        Row(
-            GlanceModifier
-                .padding(10.dp)
-                .defaultWeight()
-                .background(ImageProvider(R.drawable.expense_shape_widget_background)),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Image(
-                ImageProvider(R.drawable.ic_expense),
-                resources.getString(R.string.expense)
-            )
-            Text(
-                text = "$expense $currency",
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = ColorProvider(Color.Black)
-                )
-            )
-        }
+        AmountPill(
+            icon = R.drawable.ic_expense,
+            contentDescription = resources.getString(R.string.expense),
+            text = "$expense $currency",
+            background = GlanceTheme.colors.secondaryContainer,
+            content = GlanceTheme.colors.onSecondaryContainer,
+        )
+    }
+}
+
+@Composable
+private fun RowScope.AmountPill(
+    @DrawableRes icon: Int,
+    contentDescription: String,
+    text: String,
+    background: ColorProvider,
+    content: ColorProvider,
+) {
+    Row(
+        GlanceModifier
+            .defaultWeight()
+            .cornerRadius(16.dp)
+            .background(background)
+            .padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Image(
+            provider = ImageProvider(icon),
+            contentDescription = contentDescription,
+            colorFilter = ColorFilter.tint(content)
+        )
+        Text(
+            text = text,
+            style = TextStyle(
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = content
+            ),
+            maxLines = 1
+        )
     }
 }
 
@@ -178,26 +210,31 @@ fun ButtonsSection(
     onExpenseClick: () -> Unit,
     onTransferClick: () -> Unit,
 ) {
-    val buttons = listOf(
-        R.drawable.ic_widget_income to R.string.income,
-        R.drawable.ic_widget_expense to R.string.expense,
-        R.drawable.ic_widget_transfer to R.string.transfer
-    )
+    val resources = LocalContext.current.resources
     Row(
         GlanceModifier.fillMaxWidth().padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        buttons.forEach { (image, text) ->
-            WidgetClickableItem(
-                image = image,
-                onClick = {
-                    when (text) {
-                        R.string.income -> onIncomeClick()
-                        R.string.expense -> onExpenseClick()
-                        R.string.transfer -> onTransferClick()
-                    }
-                }
-            )
-        }
+        WidgetClickableItem(
+            icon = R.drawable.ic_income_white,
+            contentDescription = resources.getString(R.string.income),
+            background = ColorProvider(IncomeGreen),
+            iconTint = ColorProvider(OnIncomeGreen),
+            onClick = onIncomeClick
+        )
+        WidgetClickableItem(
+            icon = R.drawable.ic_expense,
+            contentDescription = resources.getString(R.string.expense),
+            background = GlanceTheme.colors.secondaryContainer,
+            iconTint = GlanceTheme.colors.onSecondaryContainer,
+            onClick = onExpenseClick
+        )
+        WidgetClickableItem(
+            icon = R.drawable.ic_transfer,
+            contentDescription = resources.getString(R.string.transfer),
+            background = GlanceTheme.colors.primary,
+            iconTint = GlanceTheme.colors.onPrimary,
+            onClick = onTransferClick
+        )
     }
 }

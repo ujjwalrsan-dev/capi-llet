@@ -244,6 +244,8 @@
     <string name="app_settings">App Settings</string>
     <string name="lock_app">Lock App</string>
     <string name="show_notifications">Show notifications</string>
+    <string name="dynamic_colors">Material You colors</string>
+    <string name="dynamic_colors_description">Use colors from your wallpaper</string>
     <string name="hide_balance">Hide balance</string>
     <string name="hide_balance_description">Tap on the hidden balance to reveal it for 5s</string>
     <string name="hide_income">Hide income</string>

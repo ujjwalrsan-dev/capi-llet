@@ -11,6 +11,10 @@ abstract class IvyContext {
     var theme: Theme by mutableStateOf(Theme.LIGHT)
         private set
 
+    /** Material You: derive colors from the wallpaper (Android 12+). */
+    var dynamicColors: Boolean by mutableStateOf(false)
+        private set
+
     @Deprecated("Old design system. Use `:ivy-design` and Material3")
     var screenWidth: Int = -1
         get() {
@@ -26,5 +30,9 @@ abstract class IvyContext {
     @Deprecated("Old design system. Use `:ivy-design` and Material3")
     fun switchTheme(theme: Theme) {
         this.theme = theme
+    }
+
+    fun switchDynamicColors(enabled: Boolean) {
+        this.dynamicColors = enabled
     }
 }

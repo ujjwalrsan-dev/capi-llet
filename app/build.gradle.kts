@@ -155,6 +155,8 @@ dependencies {
     implementation(projects.temp.oldDesign)
     implementation(projects.widget.addTransaction)
     implementation(projects.widget.balance)
+    implementation(projects.widget.dailyTransactions)
+
 
     implementation(libs.bundles.kotlin)
     implementation(libs.bundles.kotlin.android)

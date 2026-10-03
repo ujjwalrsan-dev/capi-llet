@@ -11,6 +11,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.GlanceId
+import androidx.glance.GlanceTheme
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
@@ -70,25 +71,27 @@ class WalletBalanceWidget(
             val income = prefs[doublePreferencesKey(PrefsKey.INCOME)] ?: 0.00
             val expense = prefs[doublePreferencesKey(PrefsKey.EXPENSE)] ?: 0.00
 
-            WalletBalanceWidgetContent(
-                appLocked = appLocked,
-                balance = formatBalance(balance),
-                currency = currency,
-                income = shortenAmount(income),
-                expense = shortenAmount(expense),
-                onIncomeClick = {
-                    getAppStarter().addTransactionStart(TransactionType.INCOME)
-                },
-                onExpenseClick = {
-                    getAppStarter().addTransactionStart(TransactionType.EXPENSE)
-                },
-                onTransferClick = {
-                    getAppStarter().addTransactionStart(TransactionType.TRANSFER)
-                },
-                onWidgetClick = {
-                    getAppStarter().defaultStart()
-                },
-            )
+            GlanceTheme {
+                WalletBalanceWidgetContent(
+                    appLocked = appLocked,
+                    balance = formatBalance(balance),
+                    currency = currency,
+                    income = shortenAmount(income),
+                    expense = shortenAmount(expense),
+                    onIncomeClick = {
+                        getAppStarter().addTransactionStart(TransactionType.INCOME)
+                    },
+                    onExpenseClick = {
+                        getAppStarter().addTransactionStart(TransactionType.EXPENSE)
+                    },
+                    onTransferClick = {
+                        getAppStarter().addTransactionStart(TransactionType.TRANSFER)
+                    },
+                    onWidgetClick = {
+                        getAppStarter().defaultStart()
+                    },
+                )
+            }
         }
     }
 }

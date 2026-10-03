@@ -51,7 +51,8 @@ fun IvyUI(
     ) {
         IvyTheme(
             theme = ivyContext.theme,
-            design = design
+            design = design,
+            dynamicColors = ivyContext.dynamicColors,
         ) {
             WrapWithSurface(includeSurface = includeSurface) {
                 BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
